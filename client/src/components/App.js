@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Route } from "react-router-dom";
+import reactProxy from './R109_reactProxy'
 
 // css
 import '../css/new.css';
@@ -19,6 +20,7 @@ class App extends Component {
       <div className="App">
         <HeaderAdmin/> 
         <Route exact path='/' component={LoginForm} />
+        <Route exact path='/reactProxy' component={reactProxy}/>
         <Footer/>
       </div>
     );
