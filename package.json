@@ -1,0 +1,20 @@
+{
+  "name": "react_node_board",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "server" : "cd server && yarn start",
+    "client" : "cd client && yarn start",
+    "imageserver" : "http-server c:/",
+    "dev": "concurrently --kill-others-on-fail \"yarn imageserver\" \"yarn server\" \"yarn client\""
+  },
+  "dependencies": {
+    "concurrently": "^6.1.0",
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "express": "~4.16.1",
+    "http-errors": "~1.6.3",
+    "jade": "~1.11.0",
+    "morgan": "~1.9.1"
+  }
+}
