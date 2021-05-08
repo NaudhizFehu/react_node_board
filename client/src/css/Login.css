@@ -1,0 +1,56 @@
+html,
+body,
+body * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  color: inherit;
+  background-color: inherit;
+  /* border: 2px solid orange; */
+}
+
+body {
+  background: linear-gradient(to right, #ff94ff, #ae56ff);
+}
+
+h2 {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.input-content {
+  margin-top: 40px;
+}
+
+.content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.login-wrapper {
+  height: 560px;
+  width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 2em;
+  border-radius: 10px;
+  box-shadow: 0px 2px 7px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  background-color: #fff;
+}
+
+button#submit {
+  margin-top: 15px;
+}
+
+.forgot-password {
+  text-align: right;
+}
+
+.line {
+  margin-top: 20px;
+  height: 1px;
+  background-color: gray;
+}
