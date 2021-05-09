@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 
 import axios from "axios";
 import "../css/Register.css";
@@ -13,6 +13,7 @@ export default class Register extends Component {
       name: null,
       password: null,
       phonenumber: null,
+      b_register: false,
     };
   }
 
@@ -34,10 +35,15 @@ export default class Register extends Component {
 
     axios
       .post("/user/register", { email, name, password, phonenumber })
-      .catch((err) => alert(err.response.data.msg));
+      .then((res) => {
+        this.setState({ b_register: true }); //회원가입 완료시 true
+      })
+      .catch((err) => alert(err.response.data.msg)); //회원가입 실패시 응답 메시지 알림
   };
 
   render() {
+    const { b_register } = this.state; //회원가입 여부 불러옴
+    if (b_register) return <Redirect to="/login" />; //가입 완료시 로그인페이지로 이동시킴
     return (
       <div className="content">
         <div className="login-wrapper">

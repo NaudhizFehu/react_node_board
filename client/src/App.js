@@ -7,7 +7,15 @@ import Board from "./View/Board";
 import Login from "./View/Login";
 import Register from "./View/Register";
 
+//인증 모듈
+import auth from "./Logic/Auth";
+
 class App extends Component {
+  constructor(props) {
+    super(props);
+    auth.checkAuth();
+  }
+
   render() {
     return (
       <Switch>
