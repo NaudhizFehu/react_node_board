@@ -1,16 +1,35 @@
-import React, { Component } from "react";
+import React from "react";
 import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
-import { Route, Switch } from "react-router-dom";
+import { Redirect, Route, Switch } from "react-router-dom";
 
 //View
 import Board from "./View/Board";
 import Login from "./View/Login";
 import Register from "./View/Register";
+import MyInfo from "./View/MyInfo";
 
 //인증 모듈
 import auth from "./Logic/Auth";
 
-class App extends Component {
+//Route Component를 확장하여 인증이 필요한 Component 구현
+function AuthRoute({ component: Component, ...rest }) {
+  return (
+    <Route
+      {...rest}
+      render={(props) =>
+        auth.loggedIn === true ? (
+          <Component {...props} />
+        ) : (
+          <Redirect
+            to={{ pathname: "/login", state: { from: props.location } }}
+          />
+        )
+      }
+    />
+  );
+}
+
+class App extends React.Component {
   constructor(props) {
     super(props);
     auth.checkAuth();
@@ -22,6 +41,7 @@ class App extends Component {
         <Route exact path="/" component={Board} />
         <Route exact path="/login" component={Login} />
         <Route exact path="/register" component={Register} />
+        <AuthRoute exact path="/myinfo" component={MyInfo} />
       </Switch>
     );
   }

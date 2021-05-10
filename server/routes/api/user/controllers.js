@@ -3,7 +3,7 @@ const oracledb = require("oracledb"); //오라클 모듈
 const config = require("../../../config"); //DB설정파일
 oracledb.autoCommit = true; //오토커밋
 
-//register
+//Register
 exports.register = async (req, res, next) => {
   const { email, name, password, phonenumber } = req.body; //바디에서 데이터를 읽어옴
   //   console.log(
@@ -47,6 +47,7 @@ exports.register = async (req, res, next) => {
   });
 };
 
+//Login
 exports.login = async (req, res, next) => {
   const { email, password } = req.body;
   //예외 처리
@@ -74,17 +75,49 @@ exports.login = async (req, res, next) => {
       email: user[2],
       name: user[3],
       manager: user[9],
+      //exp: Math.floor(today.getTime() / 1000) + 60 * 60, //유효기간은 현재시간보다 늦어야함(현재 설정은 1시간)
     },
     config.secret, //비밀키
-    {
-      expiresIn: "30m", //토큰 유효 시간(30분)
-    }
+    { expiresIn: "1h" } //토큰 유효기간(1시간)
   );
 
   return res.json({
     msg: `'${user[3]}'님이 로그인하였습니다.`,
     token,
     name: user[3],
+    id: user[0],
     manager: user[9],
+  });
+};
+
+//Info
+exports.info = async (req, res, next) => {
+  const { id } = req.body;
+
+  if (!id) return res.status(400).json({ msg: "잘못된 접근입니다." });
+
+  //Oracle DB에 연결
+  const conn = await oracledb.getConnection(config.db);
+  const query = `SELECT * FROM MEMBER WHERE ID=${id}`; //유저정보를 읽어옴
+  const result = await conn.execute(query);
+  conn.close();
+
+  //예외처리
+  if (!result.rows.length)
+    return res.status(400).json({ msg: "잘못된 접근입니다." });
+
+  const user = result.rows[0]; //유저정보
+  const manager = user[9] == "1" ? "관리자" : "일반회원";
+  //결과 리턴
+  return res.json({
+    email: user[2],
+    name: user[3],
+    birthday: user[4],
+    phonenumber: user[5],
+    address1: user[6],
+    address2: user[7],
+    zipcode: user[8],
+    manager: manager,
+    regDate: user[10],
   });
 };

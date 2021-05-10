@@ -114,10 +114,10 @@ export default class Register extends Component {
             >
               네이버로 회원가입
             </button>
-            <p className="login">
-              <Link to="/login">Already have an account? Login</Link>
-            </p>
           </Link>
+          <p className="login">
+            <Link to="/login">Already have an account? Login</Link>
+          </p>
         </div>
       </div>
     );

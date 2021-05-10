@@ -1,18 +1,3 @@
-html,
-body,
-body * {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  color: inherit;
-  background-color: inherit;
-  /* border: 2px solid orange; */
-}
-
-body {
-  background: linear-gradient(to right, #ff94ff, #ae56ff);
-}
-
 h2 {
   text-align: center;
   margin-top: 30px;

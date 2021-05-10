@@ -1,0 +1,23 @@
+.outline-search {
+  color: #ae56ff;
+  border-color: #ae56ff;
+  background-color: white;
+}
+.nav_right {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.nav_last {
+  margin-left: auto;
+  margin-right: 150px;
+}
+
+.logBtn {
+  margin-right: -100px;
+}
+
+.loginBtn {
+  color: white;
+  background-color: #ae56ff;
+}
