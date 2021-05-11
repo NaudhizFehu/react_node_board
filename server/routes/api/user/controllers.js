@@ -30,7 +30,8 @@ exports.register = async (req, res, next) => {
   console.log("날짜 : " + today.toLocaleDateString());
   //Oracle DB에 연결
   const conn = await oracledb.getConnection(config.db);
-  const query = `INSERT INTO MEMBER VALUES(ID_SEQ.NEXTVAL, '${password}', '${email}', '${name}', '${today.toLocaleDateString()}', '${phonenumber}', 'null', 'null', 'null', ${0}, '${today.toLocaleDateString()}', 'null')`;
+  const query = `INSERT INTO MEMBER (ID, PASSWORD, EMAIL, NAME, BIRTHDAY, PHONENUMBER, MANAGER, REGDATE)
+   VALUES(ID_SEQ.NEXTVAL, '${password}', '${email}', '${name}', '${today.toLocaleDateString()}', '${phonenumber}', ${0}, '${today.toLocaleDateString()}')`;
 
   //쿼리문 실행
   conn.execute(query, function (err, result) {
@@ -50,6 +51,7 @@ exports.register = async (req, res, next) => {
 //Login
 exports.login = async (req, res, next) => {
   const { email, password } = req.body;
+
   //예외 처리
   if (!email) return res.status(422).json({ msg: "이메일을 입력해주세요." });
   else if (!password)
@@ -108,11 +110,19 @@ exports.info = async (req, res, next) => {
 
   const user = result.rows[0]; //유저정보
   const manager = user[9] == "1" ? "관리자" : "일반회원";
+  //date에 값을 넣기위한 yyyy-mm-dd 포멧
+  const tmpStr = user[4].split("-");
+  const strToDate = new Date(tmpStr[0], tmpStr[1] - 1, tmpStr[2]);
+  const localDate = new Date(
+    strToDate.getTime() - strToDate.getTimezoneOffset() * 60000
+  );
+  const birthday = localDate.toISOString().substring(0, 10);
+
   //결과 리턴
   return res.json({
     email: user[2],
     name: user[3],
-    birthday: user[4],
+    birthday: birthday,
     phonenumber: user[5],
     address1: user[6],
     address2: user[7],
@@ -120,4 +130,60 @@ exports.info = async (req, res, next) => {
     manager: manager,
     regDate: user[10],
   });
+};
+
+//유저 기본정보 변경
+exports.changeDefaultInfo = async (req, res, next) => {
+  const { id, birthday, phonenumber } = req.body;
+
+  if (!phonenumber)
+    return res.status(422).json({ msg: "전화번호는 공백일 수 없습니다." });
+  if (!birthday)
+    return res.status(422).json({ msg: "생일은 공백일 수 없습니다." });
+
+  //Oracle DB에 연결
+  const conn = await oracledb.getConnection(config.db);
+  const query = `UPDATE MEMBER SET BIRTHDAY='${birthday}', PHONENUMBER='${phonenumber}' WHERE ID=${id}`;
+  const result = await conn.execute(query);
+  conn.close();
+
+  //리턴
+  return res.status(200).json({ msg: "정보가 변경되었습니다." });
+};
+
+//유저 비밀번호 변경
+exports.changePassword = async (req, res, next) => {
+  const { id, password, newpassword } = req.body;
+
+  if (!password)
+    return res.status(422).json({ msg: "비밀번호는 공백일 수 없습니다." });
+  if (!newpassword)
+    return res.status(422).json({ msg: "새 비밀번호는 공백일 수 없습니다." });
+
+  const conn = await oracledb.getConnection(config.db);
+  const selectQuery = `SELECT * FROM MEMBER WHERE ID=${id} AND PASSWORD='${password}'`;
+  const result = await conn.execute(selectQuery);
+
+  if (!result.rows.length)
+    return res.status(400).json({ msg: "비밀번호를 틀렸습니다." });
+
+  const changeQuery = `UPDATE MEMBER SET PASSWORD='${newpassword}' WHERE ID=${id}`;
+  const result1 = await conn.execute(changeQuery);
+  conn.close();
+
+  //리턴
+  return res.status(200).json({ msg: "정보가 변경되었습니다." });
+};
+
+//회원 탈퇴
+exports.quit = async (req, res, next) => {
+  const { id } = req.body;
+
+  //Oracle DB연결
+  const conn = await oracledb.getConnection(config.db);
+  const query = `DELETE FROM MEMBER WHERE ID=${id}`;
+  const result = await conn.execute(query);
+  conn.close();
+
+  return res.status(200).json({ msg: "회원탈퇴가 되셨습니다." });
 };

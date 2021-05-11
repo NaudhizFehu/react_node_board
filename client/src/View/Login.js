@@ -20,6 +20,7 @@ export default class Login extends Component {
   login = async (event) => {
     event.preventDefault();
     const { email, password } = this.state;
+    console.log(email + " : " + password);
 
     axios
       .post("/user/login", { email, password })

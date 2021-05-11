@@ -21,3 +21,31 @@
   color: white;
   background-color: #ae56ff;
 }
+
+.container {
+  background: white;
+}
+
+.ui-w-80 {
+  width: 120px !important;
+  height: auto;
+}
+
+.ml-4 {
+  margin-left: 1.5rem !important;
+}
+
+.media-body {
+  flex: 1;
+}
+
+.account-settings-fileinput {
+  position: absolute;
+  visibility: hidden;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+.text-gray {
+  color: gray;
+}
