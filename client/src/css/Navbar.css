@@ -3,7 +3,17 @@
   border-color: #ae56ff;
   background-color: white;
 }
+
+.outline-search:hover {
+  color: white;
+  border-color: #ae56ff;
+  background-color: #ae56ff;
+}
+
 .nav_right {
+  width: 400px;
+
+  /* margin-left: 33%; */
   margin-left: auto;
   margin-right: auto;
 }
@@ -20,4 +30,9 @@
 .loginBtn {
   color: white;
   background-color: #ae56ff;
+}
+
+.loginBtn:hover {
+  color: white;
+  background-color: #773ab1;
 }

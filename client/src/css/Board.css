@@ -17,13 +17,13 @@
   margin-right: auto;
 }
 
-div p {
+/* div p {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   width: 350px;
   height: 50px;
-}
+} */
 
 .text {
   margin-left: auto;
@@ -55,4 +55,77 @@ p {
 
 .btn.btn-secondary {
   background-color: #ff94ff;
+}
+
+.board-wrapper {
+  height: auto;
+  width: 1000px;
+  margin-top: 50px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 2em;
+  border-radius: 10px;
+  box-shadow: 0px 2px 7px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  background-color: #fff;
+}
+
+.none-border {
+  border: none;
+}
+
+.none-border-bottom {
+  border-bottom: none;
+}
+
+.pagination {
+  list-style: none;
+  display: inline-block;
+  padding: 0;
+  margin-top: 10px;
+}
+.pagination li {
+  display: inline;
+  text-align: center;
+}
+.pagination a {
+  float: left;
+  display: block;
+  font-size: 14px;
+  text-decoration: none;
+  padding: 5px 12px;
+  color: #fff;
+  margin-left: -1px;
+  border: 1px solid transparent;
+  line-height: 1.5;
+}
+.pagination a.active {
+  cursor: default;
+}
+.pagination a:active {
+  outline: none;
+}
+
+li.page-item:first-child a {
+  -moz-border-radius: 6px 0 0 6px;
+  -webkit-border-radius: 6px;
+  border-radius: 6px 0 0 6px;
+}
+li.page-item:last-child a {
+  -moz-border-radius: 0 6px 6px 0;
+  -webkit-border-radius: 0;
+  border-radius: 0 6px 6px 0;
+}
+li.page-item a {
+  border-color: #ddd;
+  color: #4285f4;
+  background: #fff;
+}
+li.page-item a:hover {
+  background: #eee;
+}
+li.page-item.active a {
+  border-color: #4285f4;
+  background: #4285f4;
+  color: #fff;
 }

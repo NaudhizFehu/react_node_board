@@ -1,0 +1,21 @@
+.article-wrapper {
+  height: auto;
+  width: 1000px;
+  margin-top: 50px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 2em;
+  border-radius: 10px;
+  box-shadow: 0px 2px 7px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  background-color: #fff;
+}
+
+.tfoot_btn {
+  margin-top: 20px;
+}
+
+.info-content {
+  /* 줄바꿈과 띄어쓰기 그대로 적용 */
+  white-space: pre-wrap;
+}

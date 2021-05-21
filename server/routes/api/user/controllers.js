@@ -6,6 +6,7 @@ oracledb.autoCommit = true; //오토커밋
 //Register
 exports.register = async (req, res, next) => {
   const { email, name, password, phonenumber } = req.body; //바디에서 데이터를 읽어옴
+  //데이터가 정상적으로 넘어오는지 검사하는 로그
   //   console.log(
   //     "userControllers[email : " +
   //       email +
@@ -17,6 +18,7 @@ exports.register = async (req, res, next) => {
   //       phonenumber +
   //       "]"
   //   );
+
   //statuscode 422 : 요청이 잘 만들어 졌으나 문법 오류로 인하여 실행할 수 없습니다.
   if (!email) return res.status(422).json({ msg: "이메일을 입력해주세요." });
   else if (!name) return res.status(422).json({ msg: "이름을 입력해주세요." });
@@ -25,15 +27,15 @@ exports.register = async (req, res, next) => {
   else if (!phonenumber)
     return res.status(422).json({ msg: "전화번호를 입력해주세요." });
 
-  //현재 날짜
+  //현재 날짜(today.toLocalDateString() : Date 객체의 날짜 부분을 지역의 언어에 맞는 문자열 표현으로 반환한다.)
   let today = new Date();
-  console.log("날짜 : " + today.toLocaleDateString());
+
   //Oracle DB에 연결
   const conn = await oracledb.getConnection(config.db);
   const query = `INSERT INTO MEMBER (ID, PASSWORD, EMAIL, NAME, BIRTHDAY, PHONENUMBER, MANAGER, REGDATE)
    VALUES(ID_SEQ.NEXTVAL, '${password}', '${email}', '${name}', '${today.toLocaleDateString()}', '${phonenumber}', ${0}, '${today.toLocaleDateString()}')`;
 
-  //쿼리문 실행
+  //쿼리문 실행(err : 에러발생시 값이 있음)
   conn.execute(query, function (err, result) {
     if (err) {
       console.log("등록중 에러 발생 : " + err);
@@ -155,18 +157,22 @@ exports.changeDefaultInfo = async (req, res, next) => {
 exports.changePassword = async (req, res, next) => {
   const { id, password, newpassword } = req.body;
 
+  //예외 처리
   if (!password)
     return res.status(422).json({ msg: "비밀번호는 공백일 수 없습니다." });
   if (!newpassword)
     return res.status(422).json({ msg: "새 비밀번호는 공백일 수 없습니다." });
 
+  //Oracle DB 조회
   const conn = await oracledb.getConnection(config.db);
   const selectQuery = `SELECT * FROM MEMBER WHERE ID=${id} AND PASSWORD='${password}'`;
   const result = await conn.execute(selectQuery);
 
+  //비밀번호 체크
   if (!result.rows.length)
     return res.status(400).json({ msg: "비밀번호를 틀렸습니다." });
 
+  //Oracle DB 등록(비밀번호 변경)
   const changeQuery = `UPDATE MEMBER SET PASSWORD='${newpassword}' WHERE ID=${id}`;
   const result1 = await conn.execute(changeQuery);
   conn.close();
@@ -185,5 +191,6 @@ exports.quit = async (req, res, next) => {
   const result = await conn.execute(query);
   conn.close();
 
+  //리턴
   return res.status(200).json({ msg: "회원탈퇴가 되셨습니다." });
 };

@@ -7,6 +7,8 @@ import Board from "./View/Board";
 import Login from "./View/Login";
 import Register from "./View/Register";
 import MyInfo from "./View/MyInfo";
+import View from "./View/Read";
+import WriteForm from "./View/WriteForm";
 
 //인증 모듈
 import auth from "./Logic/Auth";
@@ -41,7 +43,10 @@ class App extends React.Component {
         <Route exact path="/" component={Board} />
         <Route exact path="/login" component={Login} />
         <Route exact path="/register" component={Register} />
+        <Route exart path="/view/:no" component={View} />
         <AuthRoute exact path="/myinfo" component={MyInfo} />
+        <AuthRoute exact path="/add" component={WriteForm} />
+        <AuthRoute exact path="/edit/:no" component={WriteForm} />
       </Switch>
     );
   }
