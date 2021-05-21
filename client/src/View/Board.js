@@ -92,11 +92,10 @@ class Board extends Component {
     });
   }
 
-  //검색한 게시글 목록 불러오기
-  search() {
+  //검색한 게시글 목록 불러오기(async를 하지않으면 화면이 reload되어 검색정보가 날아감)
+  search = async (e) => {
+    e.preventDefault();
     const { search, searchType } = this.state;
-
-    console.log("search : " + search + " | searchType : " + searchType);
 
     //검색어 쿼리로 요청 및 저장
     axios.get("/board", { params: { search, searchType } }).then((res) => {
@@ -106,7 +105,7 @@ class Board extends Component {
         ...data,
       });
     });
-  }
+  };
 
   handlePage(page) {
     const { search, searchType } = this.state;
