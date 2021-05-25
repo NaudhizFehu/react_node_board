@@ -1,7 +1,15 @@
 const jwt = require("jsonwebtoken"); //인증 모듈
 const oracledb = require("oracledb"); //오라클 모듈
 const config = require("../../../config"); //DB설정파일
+
 oracledb.autoCommit = true; //오토커밋
+
+//네이버 아이디로 로그인하기 관련 변수
+const clint_id = "bvalxhmZV3EXFcCRlxde";
+const clint_secret = "qC1nxggNpU";
+var state = "RANDOM_STATE";
+var redirectURI = encodeURI("/");
+var api_url = "";
 
 //Register
 exports.register = async (req, res, next) => {
@@ -91,6 +99,84 @@ exports.login = async (req, res, next) => {
     name: user[3],
     id: user[0],
     manager: user[9],
+  });
+};
+
+//네이버 login
+exports.naverlogin = async (req, res, next) => {
+  //react에서 헤더로 보낸 토큰값을 받아온다.
+  const token = req.header("Authorization");
+  //접근 토큰을 전달하는 헤더 - 토큰 타입은 Bearer로 고정 (형식: {토큰타입} {접근 토큰})
+  const header = "Bearer " + token; //Bearer 다음에 공백 추가
+
+  //프로필 조회 URL
+  const api_url = "https://openapi.naver.com/v1/nid/me";
+  const request = require("request"); //request 모듈이 필요함(npm install request)
+  const options = {
+    url: api_url,
+    headers: { Authorization: header },
+  };
+  request.get(options, function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      //정상적으로 통신이 완료되었다면 db에 저장한다.
+      console.log("body: " + body); //전체 데이터
+      const requestData = JSON.parse(body); //전체 데이터를 JSON으로 파싱
+
+      //필요한 정보 추출
+      const email = requestData.response.email;
+      const name = requestData.response.name;
+      const phonenumber = requestData.response.mobile.replace(/\-/g, "");
+
+      //async function이 아니므로 모두 입력하여 사용
+      oracledb.getConnection(
+        {
+          user: "DEV4_06",
+          password: "DEV4_06",
+          connectString: "orcl",
+        },
+        function (err, connection) {
+          //에러가 났다면
+          if (err) {
+            console.error(err.message);
+          } else {
+            connection
+              .execute(`SELECT * FROM MEMBER WHERE EMAIL='${email}'`)
+              .then((selectResult) => {
+                //정보가 없다면 회원가입후 로그인 정보가 있다면 그냥 로그인
+                if (selectResult.rows.length < 1) {
+                  console.log("정보가 없습니다");
+                  let today = new Date();
+                  const joinquery = `INSERT INTO MEMBER (ID, PASSWORD, EMAIL, NAME, BIRTHDAY, PHONENUMBER, MANAGER, REGDATE)
+   VALUES(ID_SEQ.NEXTVAL, '0000', '${email}', '${name}', '${today.toLocaleDateString()}', '${phonenumber}', ${0}, '${today.toLocaleDateString()}')`;
+                  connection.execute(joinquery).then(() => {
+                    return res.end(naverReturnFuc(token, email, name, res));
+                  });
+                } else {
+                  console.log("정보 있음");
+                  return res.end(naverReturnFuc(token, email, name, res));
+                }
+              });
+          }
+        }
+      );
+    } else {
+      console.log("error");
+      if (response != null) {
+        // res.status(response.statusCode)
+        console.log("error: " + response.statusCode);
+      }
+    }
+  });
+};
+
+const naverReturnFuc = (token, email, name, res) => {
+  return res.json({
+    msg: `'${name}'님이 로그인하였습니다.`,
+    token,
+    name: name,
+    id: email,
+    manager: 0,
+    success: true,
   });
 };
 

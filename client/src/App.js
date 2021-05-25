@@ -5,6 +5,7 @@ import { Redirect, Route, Switch } from "react-router-dom";
 //View
 import Board from "./View/Board";
 import Login from "./View/Login";
+import NaverLogin from "./View/Callback";
 import Register from "./View/Register";
 import MyInfo from "./View/MyInfo";
 import View from "./View/Read";
@@ -42,6 +43,7 @@ class App extends React.Component {
       <Switch>
         <Route exact path="/" component={Board} />
         <Route exact path="/login" component={Login} />
+        <Route exact path="/callback-naverlogin" component={NaverLogin} />
         <Route exact path="/register" component={Register} />
         <Route exart path="/view/:no" component={View} />
         <AuthRoute exact path="/myinfo" component={MyInfo} />
