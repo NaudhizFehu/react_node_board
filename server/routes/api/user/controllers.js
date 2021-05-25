@@ -119,7 +119,7 @@ exports.naverlogin = async (req, res, next) => {
   request.get(options, function (error, response, body) {
     if (!error && response.statusCode == 200) {
       //정상적으로 통신이 완료되었다면 db에 저장한다.
-      console.log("body: " + body); //전체 데이터
+      console.log("body: " + body); //전체 데이터 로그
       const requestData = JSON.parse(body); //전체 데이터를 JSON으로 파싱
 
       //필요한 정보 추출
@@ -127,56 +127,62 @@ exports.naverlogin = async (req, res, next) => {
       const name = requestData.response.name;
       const phonenumber = requestData.response.mobile.replace(/\-/g, "");
 
-      //async function이 아니므로 모두 입력하여 사용
+      //Oracle DB연동
       oracledb.getConnection(
-        {
-          user: "DEV4_06",
-          password: "DEV4_06",
-          connectString: "orcl",
-        },
+        config.db,
+        //callback 함수
         function (err, connection) {
           //에러가 났다면
           if (err) {
             console.error(err.message);
           } else {
+            //DB에 연결
             connection
+              //해당 email사용자가 있는지 검사
               .execute(`SELECT * FROM MEMBER WHERE EMAIL='${email}'`)
               .then((selectResult) => {
-                //정보가 없다면 회원가입후 로그인 정보가 있다면 그냥 로그인
+                //정보가 없다면 회원가입후 로그인
                 if (selectResult.rows.length < 1) {
-                  console.log("정보가 없습니다");
-                  let today = new Date();
+                  let today = new Date(); //가입을 위한 오늘의 날짜
+                  //회원가입 쿼리문
                   const joinquery = `INSERT INTO MEMBER (ID, PASSWORD, EMAIL, NAME, BIRTHDAY, PHONENUMBER, MANAGER, REGDATE)
    VALUES(ID_SEQ.NEXTVAL, '0000', '${email}', '${name}', '${today.toLocaleDateString()}', '${phonenumber}', ${0}, '${today.toLocaleDateString()}')`;
+                  //쿼리문사용
                   connection.execute(joinquery).then(() => {
-                    return res.end(naverReturnFuc(token, email, name, res));
+                    //end메서드를 통해 해당 함수를 종료시킨다.
+                    return res.end(
+                      naverReturnFuc(token, email, name, res, true)
+                    );
                   });
                 } else {
-                  console.log("정보 있음");
-                  return res.end(naverReturnFuc(token, email, name, res));
+                  //정보가 있다면 로그인시킨다.
+                  return res.end(naverReturnFuc(token, email, name, res, true));
                 }
               });
           }
         }
       );
     } else {
+      //error라면 success를 false로 리턴하고 error코드를 띄워줌
       console.log("error");
       if (response != null) {
-        // res.status(response.statusCode)
+        res.status(response.statusCode);
         console.log("error: " + response.statusCode);
+        return res.end(naverReturnFuc(token, null, null, res, false));
       }
     }
   });
 };
 
-const naverReturnFuc = (token, email, name, res) => {
+//네이버 로그인시 반환되는 json 값
+const naverReturnFuc = (token, email, name, res, bool) => {
   return res.json({
     msg: `'${name}'님이 로그인하였습니다.`,
     token,
     name: name,
     id: email,
     manager: 0,
-    success: true,
+    success: bool,
   });
 };
 

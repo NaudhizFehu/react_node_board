@@ -4,8 +4,7 @@ import { Link, Redirect } from "react-router-dom";
 import auth from "../Logic/Auth";
 import "../css/Login.css";
 import { Navbar } from "react-bootstrap";
-import NaverLogin from "react-login-by-naver";
-import NLogin from "./LoginNaver";
+import NLogin from "./LoginNaver"; //네이버 로그인 Component
 
 export default class Login extends Component {
   constructor(props) {
@@ -93,23 +92,7 @@ export default class Login extends Component {
 
             <div className="line"></div>
 
-            {/* <button
-              type="button"
-              className="btn btn-primary btn-lg btn-block w-100"
-              id="submit"
-              onClick={this.naverlogin}
-            >
-              네이버로 로그인
-            </button> */}
-            {/* 네이버 아이디로 로그인 (callbackURI는 React에서 해결해야함)*/}
-            {/* callback주소를 express로 보냈으나 호출이 되지 않음 */}
-            {/* <NaverLogin
-              clientId="bvalxhmZV3EXFcCRlxde"
-              callbackUrl="http://127.0.0.1:3000/callback-naverlogin"
-              render={(props) => <div onClick={props.onClick}>Naver Login</div>}
-              onSuccess={(naverUser) => console.log(naverUser)}
-              onFailure={() => console.error("Naver Login Fail")}
-            /> */}
+            {/* 네이버 아이디로 로그인 */}
             <NLogin />
 
             <Link to="/register">
