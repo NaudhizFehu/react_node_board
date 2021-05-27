@@ -13,7 +13,8 @@ body {
   background: linear-gradient(to right, #ff94ff, #ae56ff);
 }
 
-h2 {
+h2,
+h3 {
   text-align: center;
   margin-top: 30px;
 }
@@ -30,7 +31,7 @@ h2 {
 }
 
 .login-wrapper {
-  height: 560px;
+  height: 680px;
   width: 500px;
   margin-left: auto;
   margin-right: auto;
@@ -49,8 +50,11 @@ button#submit {
   text-align: right;
 }
 
-.line {
-  margin-top: 20px;
-  height: 1px;
-  background-color: gray;
+hr {
+  margin-top: 10px;
+  border: 1px solid rgb(0, 0, 0);
+}
+
+.socialLoginBtn {
+  display: contents;
 }

@@ -46,7 +46,7 @@ export default class Register extends Component {
     if (b_register) return <Redirect to="/login" />; //가입 완료시 로그인페이지로 이동시킴
     return (
       <div className="content">
-        <div className="login-wrapper">
+        <div className="register-wrapper">
           <form onSubmit={this.register}>
             <h2>회원가입</h2>
             <div className="input-content">

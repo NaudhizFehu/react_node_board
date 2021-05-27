@@ -3,9 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "server" : "cd server && yarn start",
-    "client" : "cd client && yarn start",
-    "imageserver" : "http-server c:/",
+    "server": "cd server && yarn start",
+    "client": "cd client && yarn start",
+    "imageserver": "http-server c:/",
     "dev": "concurrently --kill-others-on-fail \"yarn imageserver\" \"yarn server\" \"yarn client\""
   },
   "dependencies": {
@@ -15,6 +15,7 @@
     "express": "~4.16.1",
     "http-errors": "~1.6.3",
     "jade": "~1.11.0",
-    "morgan": "~1.9.1"
+    "morgan": "~1.9.1",
+    "react-router-dom": "^5.2.0"
   }
 }

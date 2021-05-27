@@ -4,13 +4,6 @@ const config = require("../../../config"); //DB설정파일
 
 oracledb.autoCommit = true; //오토커밋
 
-//네이버 아이디로 로그인하기 관련 변수
-const clint_id = "bvalxhmZV3EXFcCRlxde";
-const clint_secret = "qC1nxggNpU";
-var state = "RANDOM_STATE";
-var redirectURI = encodeURI("/");
-var api_url = "";
-
 //Register
 exports.register = async (req, res, next) => {
   const { email, name, password, phonenumber } = req.body; //바디에서 데이터를 읽어옴
@@ -116,7 +109,7 @@ exports.naverlogin = async (req, res, next) => {
     url: api_url,
     headers: { Authorization: header },
   };
-  request.get(options, function (error, response, body) {
+  request.get(options, async function (error, response, body) {
     if (!error && response.statusCode == 200) {
       //정상적으로 통신이 완료되었다면 db에 저장한다.
       console.log("body: " + body); //전체 데이터 로그
@@ -128,61 +121,94 @@ exports.naverlogin = async (req, res, next) => {
       const phonenumber = requestData.response.mobile.replace(/\-/g, "");
 
       //Oracle DB연동
-      oracledb.getConnection(
-        config.db,
-        //callback 함수
-        function (err, connection) {
-          //에러가 났다면
-          if (err) {
-            console.error(err.message);
-          } else {
-            //DB에 연결
-            connection
-              //해당 email사용자가 있는지 검사
-              .execute(`SELECT * FROM MEMBER WHERE EMAIL='${email}'`)
-              .then((selectResult) => {
-                //정보가 없다면 회원가입후 로그인
-                if (selectResult.rows.length < 1) {
-                  let today = new Date(); //가입을 위한 오늘의 날짜
-                  //회원가입 쿼리문
-                  const joinquery = `INSERT INTO MEMBER (ID, PASSWORD, EMAIL, NAME, BIRTHDAY, PHONENUMBER, MANAGER, REGDATE)
+      const conn = await oracledb.getConnection(config.db);
+      const selectQuery = `SELECT * FROM MEMBER WHERE EMAIL='${email}'`;
+      var selectResult = await conn.execute(selectQuery);
+
+      //정보가 없다면 가입을 한다.
+      if (selectResult.rows.length < 1) {
+        const joinquery = `INSERT INTO MEMBER (ID, PASSWORD, EMAIL, NAME, BIRTHDAY, PHONENUMBER, MANAGER, REGDATE)
    VALUES(ID_SEQ.NEXTVAL, '0000', '${email}', '${name}', '${today.toLocaleDateString()}', '${phonenumber}', ${0}, '${today.toLocaleDateString()}')`;
-                  //쿼리문사용
-                  connection.execute(joinquery).then(() => {
-                    //end메서드를 통해 해당 함수를 종료시킨다.
-                    return res.end(
-                      naverReturnFuc(token, email, name, res, true)
-                    );
-                  });
-                } else {
-                  //정보가 있다면 로그인시킨다.
-                  return res.end(naverReturnFuc(token, email, name, res, true));
-                }
-              });
-          }
-        }
+        const joinResult = await conn.execute(joinquery);
+        selectResult = await conn.execute(selectQuery);
+      }
+
+      const user = selectResult.rows[0];
+
+      // 유저 정보가 있다면 jwt로 정보를 만든다.
+      const token = jwt.sign(
+        {
+          id: user[0],
+          email: user[2],
+          name: user[3],
+          manager: user[9],
+          //exp: Math.floor(today.getTime() / 1000) + 60 * 60, //유효기간은 현재시간보다 늦어야함(현재 설정은 1시간)
+        },
+        config.secret, //비밀키
+        { expiresIn: "1h" } //토큰 유효기간(1시간)
       );
+
+      return res.json({
+        msg: `'${user[3]}'님이 로그인하였습니다.`,
+        token,
+        name: user[3],
+        id: user[0],
+        manager: user[9],
+        success: true,
+      });
     } else {
       //error라면 success를 false로 리턴하고 error코드를 띄워줌
       console.log("error");
       if (response != null) {
         res.status(response.statusCode);
         console.log("error: " + response.statusCode);
-        return res.end(naverReturnFuc(token, null, null, res, false));
+        return res.json({ success: false });
       }
     }
   });
 };
 
-//네이버 로그인시 반환되는 json 값
-const naverReturnFuc = (token, email, name, res, bool) => {
+//카카오 로그인
+exports.kakaologin = async (req, res, next) => {
+  const { email, name } = req.body;
+
+  //Oracle DB연결
+  const conn = await oracledb.getConnection(config.db);
+
+  // 유저 정보 조회
+  const selectQuery = `SELECT * FROM MEMBER WHERE EMAIL='${email}'`;
+  var selectResult = await conn.execute(selectQuery);
+
+  // 유저 정보가 없다면 가입시킨다.
+  if (selectResult.rows.length < 1) {
+    const joinquery = `INSERT INTO MEMBER (ID, PASSWORD, EMAIL, NAME, BIRTHDAY, PHONENUMBER, MANAGER, REGDATE)
+   VALUES(ID_SEQ.NEXTVAL, '0000', '${email}', '${name}', '${today.toLocaleDateString()}', '01000000000', ${0}, '${today.toLocaleDateString()}')`;
+    const joinResult = await conn.execute(joinquery);
+    selectResult = await conn.execute(selectQuery);
+  }
+
+  const user = selectResult.rows[0];
+
+  // 유저 정보가 있다면 jwt로 정보를 만든다.
+  const token = jwt.sign(
+    {
+      id: user[0],
+      email: user[2],
+      name: user[3],
+      manager: user[9],
+      //exp: Math.floor(today.getTime() / 1000) + 60 * 60, //유효기간은 현재시간보다 늦어야함(현재 설정은 1시간)
+    },
+    config.secret, //비밀키
+    { expiresIn: "1h" } //토큰 유효기간(1시간)
+  );
+
   return res.json({
-    msg: `'${name}'님이 로그인하였습니다.`,
+    msg: `'${user[3]}'님이 로그인하였습니다.`,
     token,
-    name: name,
-    id: email,
-    manager: 0,
-    success: bool,
+    name: user[3],
+    id: user[0],
+    manager: user[9],
+    success: true,
   });
 };
 

@@ -4,7 +4,8 @@ import { Link, Redirect } from "react-router-dom";
 import auth from "../Logic/Auth";
 import "../css/Login.css";
 import { Navbar } from "react-bootstrap";
-import NLogin from "./LoginNaver"; //네이버 로그인 Component
+import NaverLogin from "./LoginNaver"; //네이버 로그인 Component
+import KakaoLogin from "./LoginKakao"; //카카오 로그인 Component
 
 export default class Login extends Component {
   constructor(props) {
@@ -90,20 +91,26 @@ export default class Login extends Component {
               </div>
             </form>
 
-            <div className="line"></div>
-
-            {/* 네이버 아이디로 로그인 */}
-            <NLogin />
+            <hr></hr>
 
             <Link to="/register">
               <button
                 type="button"
-                className="btn btn-primary btn-lg btn-block w-100"
+                className="btn btn-primary btn-lg btn-block w-100 mb-2"
                 id="submit"
               >
                 회원가입
               </button>
             </Link>
+            {/* <dev className="line"></dev> */}
+            <hr></hr>
+            <h3>소셜 로그인</h3>
+            <div className="socialLogin mt-3">
+              {/* 네이버 아이디로 로그인 */}
+              <NaverLogin className="NaverLogin" />
+              &emsp;
+              <KakaoLogin className="KakaoLogin" />
+            </div>
           </div>
         </div>
       </div>

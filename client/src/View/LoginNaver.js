@@ -61,7 +61,7 @@ class LoginNaver extends Component {
 
   //하단 랜더링 코드 필수(id는 naverIdLogin으로 적을 것)
   render() {
-    return <div id="naverIdLogin"></div>;
+    return <div id="naverIdLogin" className="socialLoginBtn"></div>;
   }
 }
 export default LoginNaver;
