@@ -5,7 +5,8 @@
   "scripts": {
     "server": "cd server && yarn start",
     "client": "cd client && yarn start",
-    "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\""
+    "imageserver": "http-server c:/",
+    "dev": "concurrently --kill-others-on-fail \"yarn imageserver\" \"yarn server\" \"yarn client\""
   },
   "dependencies": {
     "concurrently": "^6.1.0",

@@ -38,16 +38,16 @@ exports.getArticleList = async (req, res, next) => {
   conn.close(); // DB Close
 
   //갯수로그
-  console.log(
-    "searchType : " +
-      searchType +
-      " | search : " +
-      search +
-      " | page : " +
-      page +
-      " | count : " +
-      count.rows[0][0]
-  );
+  // console.log(
+  //   "searchType : " +
+  //     searchType +
+  //     " | search : " +
+  //     search +
+  //     " | page : " +
+  //     page +
+  //     " | count : " +
+  //     count.rows[0][0]
+  // );
 
   // 결과 데이터
   let data = [];
@@ -57,10 +57,11 @@ exports.getArticleList = async (req, res, next) => {
     data.push({
       no: val[0],
       title: val[1],
-      writer_name: val[2],
-      content: val[3],
-      article_regdate: val[4],
-      read_cnt: val[5],
+      writer_idx: val[2],
+      writer_name: val[3],
+      content: val[4],
+      article_regdate: val[5],
+      read_cnt: val[6],
     });
     // console.log(
     //   "data[no : " +
@@ -113,10 +114,11 @@ exports.getArticle = async (req, res, next) => {
   return res.json({
     article_no: val[0],
     title: val[1],
-    writer_name: val[2],
-    content: val[3],
-    article_regdate: val[4],
-    read_cnt: val[5],
+    writer_idx: val[2],
+    writer_name: val[3],
+    content: val[4],
+    article_regdate: val[5],
+    read_cnt: val[6],
   });
 };
 
@@ -143,7 +145,7 @@ exports.registerArticle = async (req, res, next) => {
 
   //Oracle DB 연결
   const conn = await oracledb.getConnection(config.db);
-  const query = `INSERT INTO ARTICLE VALUES(ARTICLE_ID_SEQ.NEXTVAL, '${title}', '${payload.name}', '${content}', TO_CHAR(SYSDATE, 'YYYY-MM-DD'), 0)`;
+  const query = `INSERT INTO ARTICLE VALUES(ARTICLE_ID_SEQ.NEXTVAL, '${title}', '${payload.idx}', '${payload.name}', '${content}', TO_CHAR(SYSDATE, 'YYYY-MM-DD'), 0)`;
 
   //Oracle DB에 쿼리 사용
   await conn.execute(query, function (err, result) {
