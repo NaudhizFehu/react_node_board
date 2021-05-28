@@ -27,10 +27,10 @@ export default class MyInfo extends Component {
   }
 
   componentDidMount() {
-    const id = auth.id;
+    const idx = auth.idx;
 
     axios
-      .post("/user/myinfo", { id })
+      .post("/user/myinfo", { idx })
       .then((res) => {
         this.setState({ ...res.data });
       })
@@ -45,11 +45,11 @@ export default class MyInfo extends Component {
 
   changeDefaultInfo = async (event) => {
     event.preventDefault();
-    const id = auth.id;
+    const idx = auth.idx;
     const { birthday, phonenumber } = this.state;
 
     axios
-      .post("/user/changeDefaultInfo", { id, birthday, phonenumber })
+      .post("/user/changeDefaultInfo", { idx, birthday, phonenumber })
       .then((res) => {
         alert(res.data.msg); //정보가 변경되었습니다
         console.log("res.data.msg : " + res.data.msg);
@@ -60,11 +60,11 @@ export default class MyInfo extends Component {
 
   changePassword = async (event) => {
     event.preventDefault();
-    const id = auth.id;
+    const idx = auth.idx;
     const { password, newpassword } = this.state;
 
     axios
-      .post("/user/changePassword", { id, password, newpassword })
+      .post("/user/changePassword", { idx, password, newpassword })
       .then((res) => {
         alert(res.data.msg); //정보가 변경되었습니다
         console.log("res.data.msg : " + res.data.msg);
@@ -75,10 +75,10 @@ export default class MyInfo extends Component {
 
   quitMember = async (event) => {
     event.preventDefault();
-    const id = auth.id;
+    const idx = auth.idx;
 
     axios
-      .post("/user/quit", { id })
+      .post("/user/quit", { idx })
       .then((res) => {
         console.log("회원탈퇴");
         alert(res.data.msg);

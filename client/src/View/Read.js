@@ -115,19 +115,23 @@ class Read extends Component {
                 <td className="info-content">{info.content}</td>
               </tr>
             </tbody>
-            <tfoot className="tfoot_btn">
-              <tr>
-                <td>
-                  <Link to={`/edit/${no}`}>
-                    <button className="btn loginBtn">수정</button>
-                  </Link>
-                  &emsp;
-                  <Button variant="danger" onClick={this.deleteArticle}>
-                    삭제
-                  </Button>
-                </td>
-              </tr>
-            </tfoot>
+            {info.writer_idx === auth.idx ? (
+              <tfoot className="tfoot_btn">
+                <tr>
+                  <td>
+                    <Link to={`/edit/${no}`}>
+                      <button className="btn loginBtn">수정</button>
+                    </Link>
+                    &emsp;
+                    <Button variant="danger" onClick={this.deleteArticle}>
+                      삭제
+                    </Button>
+                  </td>
+                </tr>
+              </tfoot>
+            ) : (
+              ""
+            )}
           </Table>
         </div>
       </div>

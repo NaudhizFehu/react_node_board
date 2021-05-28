@@ -122,7 +122,7 @@ exports.naverlogin = async (req, res, next) => {
   request.get(options, async function (error, response, body) {
     if (!error && response.statusCode == 200) {
       //정상적으로 통신이 완료되었다면 db에 저장한다.
-      console.log("body: " + body); //전체 데이터 로그
+      // console.log("body: " + body); //전체 데이터 로그
       const requestData = JSON.parse(body); //전체 데이터를 JSON으로 파싱
 
       //필요한 정보 추출
