@@ -1,10 +1,22 @@
 import React, { Component } from "react";
-import { Col, Nav, Navbar, NavDropdown, Row, Tab } from "react-bootstrap";
+import {
+  Button,
+  Col,
+  FormControl,
+  InputGroup,
+  Nav,
+  Navbar,
+  NavDropdown,
+  Row,
+  Tab,
+} from "react-bootstrap";
 import auth from "../Logic/Auth";
 import "../css/Navbar.css";
 import "../css/MyInfo.css";
 import axios from "axios";
 import { Redirect } from "react-router";
+import ZipcodeModal from "../Popup/ZipcodeAPI"; //주소검색을 Modal로 띄우기위한 import
+import DaumPostcode from "react-daum-postcode"; //Daum 주소검색 모듈
 
 export default class MyInfo extends Component {
   constructor(props) {
@@ -23,6 +35,7 @@ export default class MyInfo extends Component {
       password: null,
       newpassword: null,
       quitmember: false,
+      ModalOpen: false,
     };
   }
 
@@ -89,6 +102,36 @@ export default class MyInfo extends Component {
       .catch((err) => alert(err.response.data.msg));
   };
 
+  openModal = () => {
+    this.setState({ ModalOpen: true });
+  };
+
+  closeModal = () => {
+    this.setState({ ModalOpen: false });
+  };
+
+  zipcodeHandleComplete = (data) => {
+    let fullAddress = data.address;
+    let extraAddress = "";
+
+    if (data.addressType === "R") {
+      if (data.bname !== "") {
+        extraAddress += data.bname;
+      }
+      if (data.buildingName !== "") {
+        extraAddress +=
+          extraAddress !== "" ? `, ${data.buildingName}` : data.buildingName;
+      }
+      fullAddress += extraAddress !== "" ? ` (${extraAddress})` : "";
+    }
+    console.log(data.zonecode);
+    console.log(fullAddress);
+
+    this.setState({ zipcode: data.zonecode, address1: fullAddress });
+
+    this.closeModal();
+  };
+
   render() {
     const {
       email,
@@ -103,6 +146,7 @@ export default class MyInfo extends Component {
       password,
       newpassword,
       quitmember,
+      ModalOpen,
     } = this.state;
 
     if (quitmember) return <Redirect to="/" />;
@@ -258,15 +302,37 @@ export default class MyInfo extends Component {
                     {/* 상세 정보 */}
                     <Tab.Pane eventKey="account-info">
                       <div className="card-body">
-                        <div className="form-group">
-                          <label className="form-label">우편번호</label>
-                          <input
-                            type="text"
-                            className="form-control mb-1"
-                            value={zipcode || ""}
+                        <label className="form-label">우편번호</label>
+                        <InputGroup className="mb-3">
+                          <FormControl
+                            aria-label="zipcode"
                             readOnly
+                            value={zipcode || ""}
                           />
-                        </div>
+                          <InputGroup.Append>
+                            <Button
+                              className="outline-search"
+                              // 검색버튼이 눌렸을때 ModalOpen값을 true로 변경
+                              onClick={this.openModal}
+                            >
+                              검색
+                            </Button>
+                            <ZipcodeModal
+                              //ModalOpen값을 Modal로 전달
+                              open={ModalOpen}
+                              //close이벤트 발생시 ModalOpen값을 false로 변경
+                              close={this.closeModal}
+                              //Modal 헤더 값 지정
+                              header="주소 검색"
+                            >
+                              {/* Daum 주소검색 API사용 */}
+                              <DaumPostcode
+                                // 정상적으로 완료시 동작할 메서드(헨들러)
+                                onComplete={this.zipcodeHandleComplete}
+                              />
+                            </ZipcodeModal>
+                          </InputGroup.Append>
+                        </InputGroup>
                         <div className="form-group">
                           <label className="form-label">도로명 주소</label>
                           <input
@@ -300,6 +366,14 @@ export default class MyInfo extends Component {
                               value={regDate || ""}
                               readOnly
                             />
+                          </div>
+                          <div className="d-flex flex-row-reverse">
+                            <button
+                              type="submit"
+                              className="btn outline-search mt-3"
+                            >
+                              정보 변경하기
+                            </button>
                           </div>
                         </div>
                       </div>
