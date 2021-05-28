@@ -37,17 +37,17 @@ class LoginNaver extends Component {
           const { name, email, mobile } = naverLogin.user;
 
           //필수 제공 동의 조건
-          if (name == undefined) {
+          if (name === undefined) {
             alert("이름은 필수 동의 입니다. 정보제공을 동의해주세요");
             naverLogin.reprompt();
             return;
           }
-          if (email == undefined) {
+          if (email === undefined) {
             alert("이메일은 필수 동의 입니다. 정보제공을 동의해주세요");
             naverLogin.reprompt();
             return;
           }
-          if (mobile == undefined) {
+          if (mobile === undefined) {
             alert("전화번호는 필수 동의 입니다. 정보제공을 동의해주세요");
             naverLogin.reprompt();
             return;

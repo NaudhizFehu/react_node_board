@@ -81,7 +81,7 @@ class WriteForm extends Component {
     event.preventDefault(); //form 이벤트 멈추기
     const { title, content, mode, no } = this.state;
 
-    if (mode == "add") {
+    if (mode === "add") {
       axios
         .put("/board/create", { title, content })
         .then((res) => {

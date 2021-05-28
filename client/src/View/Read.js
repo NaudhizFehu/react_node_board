@@ -115,6 +115,7 @@ class Read extends Component {
                 <td className="info-content">{info.content}</td>
               </tr>
             </tbody>
+            {/* 작성자의 idx와 접속자의 idx가 맞지않다면 수정, 삭제버튼이 나오지않도록 함 */}
             {info.writer_idx === auth.idx ? (
               <tfoot className="tfoot_btn">
                 <tr>

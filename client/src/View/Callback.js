@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { Redirect, useHistory, useLocation } from "react-router";
+import React from "react";
 import auth from "../Logic/Auth";
 
 function Callback() {
